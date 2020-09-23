@@ -14,15 +14,20 @@ class CovidStatsData {
   final List<DailyData> nigeria;
   CovidStatsData({this.nigeria});
   factory CovidStatsData.fromJson(Map<String, dynamic> json) {
-    return CovidStatsData(
-      nigeria: json['Nigeria'],
-    );
+    List<DailyData> nigeria = json['Nigeria'].map<DailyData>((data) {
+      return DailyData(
+          date: data["date"],
+          confirmed: data["confirmed"],
+          deaths: data["deaths"],
+          recovered: data["recovered"]);
+    }).toList();
+    return CovidStatsData(nigeria: nigeria);
   }
 }
 
 Future<CovidStatsData> fetchData() async {
   final response =
-      await http.get('<https://pomber.github.io/covid19/timeseries.json>');
+      await http.get('https://pomber.github.io/covid19/timeseries.json');
   if (response.statusCode == 200) {
     return CovidStatsData.fromJson(json.decode(response.body));
   } else {
