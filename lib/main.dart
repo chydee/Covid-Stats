@@ -1,23 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:covid_stats/data.dart' as data;
 
 void main() {
-  runApp(MyApp());
+  runApp(CovidData());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class CovidDataState extends State<CovidData> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Covid Stats'),
-        ),
-        body: Center(
-          child: Text('Covid Stats Update'),
-        ),
-      ),
-    );
+    final covidStats = data.fetchData();
+    return Text(covidStats.toString());
   }
+}
+
+class CovidData extends StatefulWidget {
+  @override
+  CovidDataState createState() => CovidDataState();
 }
