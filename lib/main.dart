@@ -17,25 +17,40 @@ class CovidDataState extends State<CovidData> {
   final _font = const TextStyle(fontSize: 18.0);
   final _biggerFont = const TextStyle(fontSize: 20.0);
 
-  Widget _buildRow(BuildContext context, data.DailyData dailyData) {
-    return ListTile(
-      title: Text(
-        dailyData.date,
-        style: _font,
+  Widget _buildRow(
+      BuildContext context, data.DailyData dailyData, int prevDailyData) {
+    int diff = dailyData.confirmed - prevDailyData;
+    Color color = Colors.green;
+    if (diff == 0) {
+      color = Colors.green;
+    } else {
+      color = Colors.red;
+    }
+    return Card(
+      child: ListTile(
+        leading: Icon(
+          Icons.calendar_today,
+          color: color,
+          size: 24,
+        ),
+        title: Text(
+          dailyData.date,
+          style: _font,
+        ),
+        trailing: Text(
+          dailyData.confirmed.toString(),
+          style: _biggerFont,
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailDailyStats(
+                      dailyData: dailyData,
+                    )),
+          );
+        },
       ),
-      trailing: Text(
-        dailyData.confirmed.toString(),
-        style: _biggerFont,
-      ),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => DetailDailyStats(
-                    dailyData: dailyData,
-                  )),
-        );
-      },
     );
   }
 
@@ -47,6 +62,16 @@ class CovidDataState extends State<CovidData> {
       home: Scaffold(
         appBar: AppBar(
           title: Text('Covid Stats App'),
+          actions: <Widget>[
+            //action button
+            IconButton(
+                icon: Icon(Icons.refresh),
+                onPressed: () {
+                  setState(() {
+                    futureData = data.fetchData();
+                  });
+                })
+          ],
         ),
         body: Center(
           child: FutureBuilder<data.CovidStatsData>(
@@ -56,8 +81,15 @@ class CovidDataState extends State<CovidData> {
                 return ListView.builder(
                   itemCount: snapshot.data.nigeria.length,
                   itemBuilder: (context, index) {
+                    int prevDailyData;
+                    if (index > 1) {
+                      prevDailyData =
+                          snapshot.data.nigeria[index - 1].confirmed;
+                    } else {
+                      prevDailyData = 0;
+                    }
                     data.DailyData dailyData = snapshot.data.nigeria[index];
-                    return _buildRow(context, dailyData);
+                    return _buildRow(context, dailyData, prevDailyData);
                   },
                 );
               } else if (snapshot.hasError) {
