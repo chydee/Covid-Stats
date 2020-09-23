@@ -1,6 +1,6 @@
-# covid_stats
+# Covid Stats App
 
-A new Flutter project.
+An That shows the current statistics of the Covid 19 pandemic in Nigeria
 
 ## Getting Started
 
