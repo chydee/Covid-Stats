@@ -1,3 +1,4 @@
+import 'package:covid_stats/detailDailyStats.dart';
 import 'package:flutter/material.dart';
 import 'package:covid_stats/data.dart' as data;
 
@@ -13,18 +14,28 @@ class CovidDataState extends State<CovidData> {
     futureData = data.fetchData();
   }
 
-  final _Font = const TextStyle(fontSize: 18.0);
-  final _biggerFont = const TextStyle(fontSize: 24.0);
-  Widget _buildRow(data.DailyData dailyData) {
+  final _font = const TextStyle(fontSize: 18.0);
+  final _biggerFont = const TextStyle(fontSize: 20.0);
+
+  Widget _buildRow(BuildContext context, data.DailyData dailyData) {
     return ListTile(
       title: Text(
         dailyData.date,
-        style: _Font,
+        style: _font,
       ),
       trailing: Text(
         dailyData.confirmed.toString(),
         style: _biggerFont,
       ),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => DetailDailyStats(
+                    dailyData: dailyData,
+                  )),
+        );
+      },
     );
   }
 
@@ -46,7 +57,7 @@ class CovidDataState extends State<CovidData> {
                   itemCount: snapshot.data.nigeria.length,
                   itemBuilder: (context, index) {
                     data.DailyData dailyData = snapshot.data.nigeria[index];
-                    return _buildRow(dailyData);
+                    return _buildRow(context, dailyData);
                   },
                 );
               } else if (snapshot.hasError) {
